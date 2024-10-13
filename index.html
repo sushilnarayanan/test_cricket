@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Scorecard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .team {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cricket Scorecard</h1>
+    
+    <div id="team1" class="team">
+        <h2>Team 1</h2>
+        <table id="team1Table">
+            <tr>
+                <th>Player</th>
+                <th>Runs</th>
+                <th>Balls</th>
+                <th>Actions</th>
+            </tr>
+        </table>
+        <button onclick="addPlayer('team1')">Add Player</button>
+    </div>
+    
+    <div id="team2" class="team">
+        <h2>Team 2</h2>
+        <table id="team2Table">
+            <tr>
+                <th>Player</th>
+                <th>Runs</th>
+                <th>Balls</th>
+                <th>Actions</th>
+            </tr>
+        </table>
+        <button onclick="addPlayer('team2')">Add Player</button>
+    </div>
+
+    <script>
+        function addPlayer(team) {
+            const table = document.getElementById(team + 'Table');
+            const newRow = table.insertRow(-1);
+            const playerName = prompt("Enter player name:");
+            
+            newRow.innerHTML = `
+                <td>${playerName}</td>
+                <td>0</td>
+                <td>0</td>
+                <td>
+                    <button onclick="addRuns(this, 1)">+1</button>
+                    <button onclick="addRuns(this, 4)">+4</button>
+                    <button onclick="addRuns(this, 6)">+6</button>
+                    <button onclick="addBall(this)">Ball</button>
+                </td>
+            `;
+        }
+
+        function addRuns(button, runs) {
+            const row = button.closest('tr');
+            const runsCell = row.cells[1];
+            const ballsCell = row.cells[2];
+            
+            runsCell.textContent = parseInt(runsCell.textContent) + runs;
+            ballsCell.textContent = parseInt(ballsCell.textContent) + 1;
+            
+            updateTeamStats(row);
+        }
+
+        function addBall(button) {
+            const row = button.closest('tr');
+            const ballsCell = row.cells[2];
+            
+            ballsCell.textContent = parseInt(ballsCell.textContent) + 1;
+            
+            updateTeamStats(row);
+        }
+
+        function updateTeamStats(playerRow) {
+            const table = playerRow.closest('table');
+            const teamDiv = table.closest('.team');
+            let totalRuns = 0;
+            let totalBalls = 0;
+
+            for (let i = 1; i < table.rows.length; i++) {
+                totalRuns += parseInt(table.rows[i].cells[1].textContent);
+                totalBalls += parseInt(table.rows[i].cells[2].textContent);
+            }
+
+            const runRate = totalBalls > 0 ? (totalRuns / (totalBalls / 6)).toFixed(2) : 0;
+
+            // Update or create team stats
+            let statsDiv = teamDiv.querySelector('.team-stats');
+            if (!statsDiv) {
+                statsDiv = document.createElement('div');
+                statsDiv.className = 'team-stats';
+                teamDiv.appendChild(statsDiv);
+            }
+
+            statsDiv.innerHTML = `
+                <p>Total Runs: ${totalRuns}</p>
+                <p>Total Balls: ${totalBalls}</p>
+                <p>Run Rate: ${runRate}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
